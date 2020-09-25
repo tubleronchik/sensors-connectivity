@@ -62,10 +62,11 @@ class HTTPserver(threading.Thread, BaseHTTPRequestHandler):
         return measurement
     
     def run(self):
+        rospy.loginfo('run func')
         self.server_address = ('', 8001)
-        self.httpd = HTTPServer(server_address, HTTPserver)
-        rospy.loginfo('Starting httpd on port %d...' % port)
-        httpd.serve_forever()
+        self.httpd = HTTPServer(self.server_address, HTTPserver)
+        rospy.loginfo('Starting httpd')
+        self.httpd.serve_forever()
 
 
 class HTTPStation(IStation):
