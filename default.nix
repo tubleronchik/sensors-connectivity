@@ -26,6 +26,7 @@ mkRosPackage rec {
     pynacl
     ipfshttpclient
     flask
+    #http.server
   ];
 
   meta = with stdenv.lib; {

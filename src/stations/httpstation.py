@@ -4,34 +4,43 @@ from asyncio import StreamReader, StreamWriter
 import threading
 import time
 import rospy
-from flask import Flask
-from flask import request
-from flask import jsonify
 import time 
 from drivers.sds011 import SDS011_MODEL
 
 from stations import IStation, StationData, Measurement, STATION_VERSION
 from collections import deque
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
-app = Flask(__name__)
 
-
-class HTTPServer(threading.Thread):
+class HTTPserver(threading.Thread, BaseHTTPRequestHandler):
     def __init__(self, q: deque):
         threading.Thread.__init__(self)
+        #BaseHTTPRequestHandler.__init__(self)
         self.q = q
 
-    @app.route('/', methods = ['GET', 'POST'])
-
-    def getting_data(self, q: deque):
-        print('data is coming!')
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
         
-        if(request.method == 'POST'):
-            data = request.get_json()
-            meas = self.parser(data)
-            self.q.append(meas)
-            return jsonify(data)
+    def do_HEAD(self):
+        self._set_headers()
+    
+    def do_GET(self):
+        self._set_headers()
+        self.wfile.write(json.dumps({'hello': 'world', 'received': 'ok'}))
+
+    def do_post(self, q: deque):
+        
+        rospy.loginfo("data is coming!")
+        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+        length = int(self.headers.get('content-length'))
+        data = json.loads(self.rfile.read(length))
+        meas = self.parser(data)
+        self.q.append(meas)
+        self._set_headers()
+        self.wfile.write(json.dumps(message))
 
     def parser(self, data):
         for dict in python_data['sensordatavalues']:
@@ -53,8 +62,10 @@ class HTTPServer(threading.Thread):
         return measurement
     
     def run(self):
-        app.debug = False # otherwise problem with pyhton3.8
-        app.run(host='0.0.0.0')
+        self.server_address = ('', 8001)
+        self.httpd = HTTPServer(server_address, HTTPserver)
+        rospy.loginfo('Starting httpd on port %d...' % port)
+        httpd.serve_forever()
 
 
 class HTTPStation(IStation):
@@ -62,7 +73,7 @@ class HTTPStation(IStation):
     def __init__(self, config: dict):
         super().__init__(config)
         self.q = deque(maxlen=1)
-        HTTPServer(self.q).start()
+        HTTPserver(self.q).start()
         self.version = f"airalab-com-{STATION_VERSION}"
 
     def get_data(self):
