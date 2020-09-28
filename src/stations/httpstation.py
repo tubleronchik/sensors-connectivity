@@ -48,7 +48,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         return measurement
 
     def do_POST(self):
-
         global q
         rospy.loginfo("data is coming!")
         ctype, pdict = cgi.parse_header(self.headers['content-type'])
