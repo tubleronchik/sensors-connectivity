@@ -65,7 +65,8 @@ class WorkerNode:
         if self.config["tcpstation"]["enable"]:
             s.append(TCPStation(self.config))
 
-        s.append(HTTPStation(self.config))
+        if self.config["httpstation"]["enable"]:
+            s.append(HTTPStation(self.config))
 
         return s
 
