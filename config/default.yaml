@@ -12,11 +12,11 @@ tcpstation:
   enable: false
   address: "0.0.0.0:31313"  # IP and PORT to listen to, 0.0.0.0:31313 means available for everyone
   acl:                  # list of known addresses. If not specified accepts from everyone
-  # -
-  # -
 httpstation:
-  enable: true 
+  enable: true
   port: 8001
+  # -
+  # -
 luftdaten:
   enable: true          # whether or not publish to https://luftdaten.info/
 robonomics:

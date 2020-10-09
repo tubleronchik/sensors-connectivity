@@ -4,7 +4,7 @@ from asyncio import StreamReader, StreamWriter
 import threading
 import time
 import rospy
-import time 
+import time
 from drivers.sds011 import SDS011_MODEL
 import json
 import cgi
@@ -21,10 +21,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
-        
+
     def do_HEAD(self):
         self._set_headers()
-    
+
     def do_GET(self):
         self._set_headers()
 
@@ -34,9 +34,15 @@ class RequestHandler(BaseHTTPRequestHandler):
                 pm10 = dict['value']
             if dict['value_type'] == 'SDS_P2':
                 pm25 = dict['value']
+            if dict['value_type'] == 'GPS_lat':
+                geo_lat = dict['value']
+            else:
+                geo_lat = 59.9342802
+            if dict['value_type'] == 'GPS_lon':
+                geo_lon = dict['value']
+            else:
+                geo_lon = 30.3350986
         public = '655a40d4b951b4fbc0c9a7658e66377f1a5ff92111f10145256e0026ab07a669'
-        geo_lon = 30.3350986
-        geo_lat = 59.9342802
         timestamp = int(time.time())
         measurement = Measurement(public,
                                   SDS011_MODEL,
@@ -66,7 +72,7 @@ class HTTP_server(threading.Thread):
         threading.Thread.__init__(self)
         self.port = port
 
-    
+
     def run(self):
         rospy.loginfo('run func')
         self.server_address = ('', self.port)
@@ -79,8 +85,8 @@ class HTTPStation(IStation):
 
     def __init__(self, config: dict):
         super().__init__(config)
-        port = int(config["httpstation"]["port"])
-        HTTP_server(port).start()
+        #port = int(config["httpstation"]["port"])
+        HTTP_server(self.config).start()
         self.version = f"airalab-com-{STATION_VERSION}"
 
     def get_data(self):
@@ -96,9 +102,3 @@ class HTTPStation(IStation):
             time.time() - self.start_time,
             value
         )]
-
-
-
-
-
-
