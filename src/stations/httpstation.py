@@ -85,8 +85,8 @@ class HTTPStation(IStation):
 
     def __init__(self, config: dict):
         super().__init__(config)
-        #port = int(config["httpstation"]["port"])
-        HTTP_server(self.config).start()
+        port = int(config["httpstation"]["port"])
+        HTTP_server(port).start()
         self.version = f"airalab-com-{STATION_VERSION}"
 
     def get_data(self):
