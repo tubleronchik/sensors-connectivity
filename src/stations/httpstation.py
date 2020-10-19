@@ -44,9 +44,9 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.id = int(data["esp8266id"])
             for d in data["sensordatavalues"]:
                 if d["value_type"] == "SDS_P1":
-                    pm10 = d["value"]
+                    pm10 = float(d["value"])
                 if d["value_type"] == "SDS_P2":
-                    pm25 = d["value"]
+                    pm25 = float(d["value"])
                 if d["value_type"] == "GPS_lat":
                     geo_lat = d["value"]
                 if d["value_type"] == "GPS_lon":
