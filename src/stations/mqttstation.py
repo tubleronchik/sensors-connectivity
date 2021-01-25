@@ -21,19 +21,18 @@ def _generate_pubkey() -> str:
 
 class MQTTHandler(mqtt.Client):
     def __init__(self, host: str, port: int):
-        threading.Thread.__init__(self)
         mqtt.Client.__init__(self)
         self.host = host
         self.port = port
 
     def on_connect(self, client, obj, flags, rc):
-        rospy.loginfo(f'Connected to mqtt with result code {str(rc)} ')
+        rospy.loginfo(f"Connected to mqtt with result code {str(rc)}")
 
     def _parser(self, data: dict) -> Measurement: 
         global sessions
         global thlock
         try:
-            if 'esp8266id' in data.keys():
+            if "esp8266id" in data.keys():
                     self.client_id = int(data["esp8266id"])
                     temperature = None
                     pressure = None
@@ -72,7 +71,7 @@ class MQTTHandler(mqtt.Client):
                                      geo_lon,
                                      meas)
 
-            rospy.loginfo(f'measurment: {measurement}')
+            rospy.loginfo(f"measurment: {measurement}")
         except Exception as e:
             rospy.logerr(e)
             return
@@ -83,30 +82,23 @@ class MQTTHandler(mqtt.Client):
         global sessions
        
         data = json.loads(msg.payload.decode())
-
-        print(f'msg.payload {msg.payload}')
-        print(data)
         parse_data = self._parser(data)
-        print(f'parse {parse_data}')
+        print(f"parse {parse_data}")
+
         with thlock:
             if parse_data:
                 sessions[self.client_id] = parse_data
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
-        rospy.loginfo(f'Subscribed {str(mid)}, client {client}')
+        rospy.loginfo(f"Subscribed {str(mid)}, client {client}")
 
     def run(self):
         self.connect(self.host, self.port, 60)
         #self.subscribe("$SYS/#")
         self.subscribe("sensors", 0)
         rc = 0
-        while rc == 0:
-            rc = self.loop()
-
-        return rc
+        self.loop_start()
     
-
-
 class MQTTStation(IStation):
     def __init__(self, config: dict):
         super().__init__(config)
@@ -114,7 +106,7 @@ class MQTTStation(IStation):
         self.DEAD_SENSOR_TIME = 60*60 # 1 hour
         host = config["mqttstation"]["host"]
         port = int(config["mqttstation"]["port"])
-        #MQTTHandler(host, port).run()
+
         client = MQTTHandler(host, port)
         rc = client.run()
     
@@ -129,6 +121,7 @@ class MQTTStation(IStation):
                 time.time() - self.start_time,
                 v
             ))
+        print(f'result {result}')
         rospy.loginfo(f'result {result}')
         return result
 
