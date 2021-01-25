@@ -102,7 +102,7 @@ class MQTTHandler(mqtt.Client):
         rc = 0
         while rc == 0:
             rc = self.loop()
-            #rospy.loginfo(rc)
+
         return rc
     
 
