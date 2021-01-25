@@ -13,6 +13,11 @@
       "enable":true,
       "port":8001
    },
+   "mqttstation": {
+      "enable": true,
+      "host": "192.168.1.106",
+      "port": 1883
+   },
    "luftdaten":{
       "enable":true
    },
