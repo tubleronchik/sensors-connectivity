@@ -27,6 +27,7 @@ class MQTTHandler(mqtt.Client):
 
     def on_connect(self, client, obj, flags, rc):
         rospy.loginfo(f"Connected to mqtt with result code {str(rc)}")
+        self.subscribe("sensors", 0)
 
     def _parser(self, data: dict) -> Measurement: 
         global sessions
@@ -90,13 +91,14 @@ class MQTTHandler(mqtt.Client):
                 sessions[self.client_id] = parse_data
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
+        print(f"Subscribed {str(mid)}, client {client}")
         rospy.loginfo(f"Subscribed {str(mid)}, client {client}")
 
     def run(self):
         self.connect_async(self.host, self.port, 60)
         #self.subscribe("$SYS/#")
         self.loop_start()
-        self.subscribe("sensors", 0)
+        
     
 class MQTTStation(IStation):
     def __init__(self, config: dict):
