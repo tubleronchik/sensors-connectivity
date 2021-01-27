@@ -93,11 +93,10 @@ class MQTTHandler(mqtt.Client):
         rospy.loginfo(f"Subscribed {str(mid)}, client {client}")
 
     def run(self):
-        self.connect(self.host, self.port, 60)
+        self.connect_async(self.host, self.port, 60)
         #self.subscribe("$SYS/#")
-        self.subscribe("sensors", 0)
-        rc = 0
         self.loop_start()
+        self.subscribe("sensors", 0)
     
 class MQTTStation(IStation):
     def __init__(self, config: dict):
