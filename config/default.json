@@ -15,7 +15,7 @@
    },
    "mqttstation": {
       "enable": true,
-      "host": "192.168.100.60",
+      "host": "connectivity.robonomics.network",
       "port": 1883
    },
    "luftdaten":{
